@@ -1,6 +1,7 @@
 import {createBrowserRouter} from "react-router-dom";
 import Login from "./features/auth/pages/login";
 import Register from "./features/auth/pages/register";
+import Protected from "./features/auth/components/protected";
 
 
 
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
     {
         path: "/register",
         element: <Register />
+    },
+    {
+        path:"/",
+        element: <Protected><h1>Home Page</h1></Protected> // home page ko protected component se wrap kr denge taki wo sirf tabhi access ho jab user login ho
     }
 
 
