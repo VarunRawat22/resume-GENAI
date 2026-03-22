@@ -48,46 +48,52 @@ async function generateInterviewReport(resume,selfDescription,jobDescription){
 const prompt = `
 You are an expert interviewer.
 
-Return ONLY valid JSON.
+Return ONLY valid JSON. No explanation.
 
-Follow this EXACT structure:
+RULES:
+- Do NOT stringify JSON
+- Arrays must contain objects (not strings)
+- Fill all fields with REAL, meaningful content
+- Do NOT return placeholders like "question", "answer", etc.
 
-Example Output:
+STRUCTURE:
 
 {
-  "matchScore": 80,
+  "matchScore": number,
   "technicalQuestions": [
     {
-      "question": "What is React?",
-      "intention": "Check basics",
-      "answer": "React is a JS library..."
+      "question": "string",
+      "intention": "string",
+      "answer": "string"
     }
   ],
   "behavioralQuestions": [
     {
-      "question": "Tell me about a challenge",
-      "intention": "Check problem solving",
-      "answer": "Explain situation..."
+      "question": "string",
+      "intention": "string",
+      "answer": "string"
     }
   ],
   "skillGaps": [
     {
-      "skill": "TypeScript",
-      "severity": "Medium"
+      "skill": "string",
+      "severity": "Low | Medium | High"
     }
   ],
   "preparationPlan": [
     {
-      "day": 1,
-      "focus": "React Basics",
-      "tasks": ["Revise hooks", "Build small project"]
+      "day": number,
+      "focus": "string",
+      "tasks": ["string"]
     }
   ]
 }
 
 IMPORTANT:
-- Do NOT return arrays like ["question", "..."]
-- ALWAYS return objects inside arrays
+- Generate at least 5 technical questions
+- Generate at least 3 behavioral questions
+- Provide complete answers (not short phrases)
+- Use realistic interview-level content
 
 Now generate for:
 
@@ -112,7 +118,7 @@ ${jobDescription}
     
     console.log(response.text); // isse hoga kya ki jab bhi hum AI se response receive karenge, to hum us response ko json.parse karke ek JavaScript object me convert kar denge, taki hum uske andar ke fields ko easily access kar sake, jaise ki resume, selfDescription, aur jobDescription, aur unke basis pe hum apne application me further processing kar sake, jaise ki interview report ko database me store karna ya user ko display karna.
 
-    return response.text;
+    return JSON.parse(response.text); // isse hoga kya ki jab bhi hum AI se response receive karenge, to hum us response ko json.parse karke ek JavaScript object me convert kar denge, taki hum uske andar ke fields ko easily access kar sake, jaise ki matchScore, technicalQuestions, behavioralQuestions, skillGaps, aur preparationPlan, aur unke basis pe hum apne application me further processing kar sake, jaise ki interview report ko database me store karna ya user ko display karna.
 }
 
 

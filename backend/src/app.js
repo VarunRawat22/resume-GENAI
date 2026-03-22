@@ -15,8 +15,10 @@ app.use(cors({
 
 // require all routes here
 const authRouter=require('./routes/auth.routes');
+const interviewRouter=require('./routes/interview.routes');
 
 // use all routes here
 app.use("/api/auth", authRouter); 
+app.use("/api/interview", interviewRouter); // isse hoga kya ki jab bhi frontend se /api/interview ke endpoint pe request jayegi, to wo request interviewRouter ke paas jayegi, aur waha se us request ko handle kiya jayega, aur interview report generate karne ka logic waha pe implement kiya jayega, taki hum apne application me interview report generate karne ka feature add kar sake.
 
 module.exports=app;
