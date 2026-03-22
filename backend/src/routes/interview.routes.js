@@ -7,6 +7,8 @@ const interviewController = require("../controllers/interview.controller"); // i
 
 const interviewRouter = express.Router();
 
+const upload = require("../middlewares/file.middleware"); // is middleware ko hum isliye import karenge taki hum apne route pe file upload ka functionality add kar sake, aur users ko apna resume upload karne ka option de sake, taki hum us resume ke basis pe interview report generate kar sake, aur users ko personalized feedback de sake, taki unhe apne interview preparation me madad mil sake.
+
 
 
 /**
@@ -18,7 +20,7 @@ const interviewRouter = express.Router();
  */
 
 
-interviewRouter.post("/",authMiddleware.authUser,interviewController.generateInterviewReportController); // is route ka endpoint h /api/interview/ aur method h POST, aur is route pe hum authMiddleware.authUser middleware ko apply karenge taki sirf authenticated users hi is route ko access kar sake, aur interviewController.generateInterviewController function ko is route ke handler ke roop me use karenge taki jab bhi koi request is route pe aayegi to wo function execute hoga, aur us function ke andar hum interview report generate karne ka logic implement karenge, taki jab bhi koi user apna resume, self description, aur job description bheje to uske basis pe AI se interview report generate karke user ko response me bhej sake.
+interviewRouter.post("/",authMiddleware.authUser,upload.single("resume"),interviewController.generateInterviewReportController); // is route ka endpoint h /api/interview/ aur method h POST, aur is route pe hum authMiddleware.authUser middleware ko apply karenge taki sirf authenticated users hi is route ko access kar sake, aur interviewController.generateInterviewController function ko is route ke handler ke roop me use karenge taki jab bhi koi request is route pe aayegi to wo function execute hoga, aur us function ke andar hum interview report generate karne ka logic implement karenge, taki jab bhi koi user apna resume, self description, aur job description bheje to uske basis pe AI se interview report generate karke user ko response me bhej sake.
 
 
 module.exports = interviewRouter;
