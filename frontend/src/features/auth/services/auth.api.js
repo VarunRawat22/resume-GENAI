@@ -6,7 +6,7 @@ import axios from "axios";
 // axios instance create krne wala code. itna code repeat ho rha tha
 // ab ham api.get api.post use krke API call kr skte h without writing baseURL and withCredentials every time
 const api= axios.create({
-    baseURL: 'http://localhost:3000/api/auth',
+    baseURL: 'http://localhost:3000',
     withCredentials: true
 })
 

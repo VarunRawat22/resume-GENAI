@@ -37,88 +37,88 @@ const interviewReportSchema = z.object({
     
 });
 
-async function generateInterviewReport(resume,selfDescription,jobDescription){
 
-    // yaha pe hume AI ko ek prompt dena hoga, jisme hum usko candidate ka resume, self description, aur job description denge, aur usse bolenge ki wo in teeno inputs ke basis pe ek detailed interview report generate kare, jisme candidate ke strengths, weaknesses, aur improvement areas ko highlight kiya gaya ho, aur saath hi me ek preparation plan bhi provide kiya gaya ho, taki candidate apni preparation ko effectively plan kar sake.
-    // const prompt = `generate a detailed interview report based on the following inputs:
-    // Resume: ${resume}
-    // Self Description: ${selfDescription}
-    // Job Description: ${jobDescription}
-    // `;
-const prompt = `
-You are an expert interviewer.
 
-Return ONLY valid JSON. No explanation.
+async function generateInterviewReport(resume, selfDescription, jobDescription) {
+    
+    const prompt = `
+You are an expert interviewer. Analyze the candidate and generate an interview report.
 
-RULES:
-- Do NOT stringify JSON
-- Arrays must contain objects (not strings)
-- Fill all fields with REAL, meaningful content
-- Do NOT return placeholders like "question", "answer", etc.
-
-STRUCTURE:
+Return ONLY a JSON object with EXACTLY these fields:
 
 {
-  "matchScore": number,
+  "matchScore": <number between 1-100>,
   "technicalQuestions": [
     {
-      "question": "string",
-      "intention": "string",
-      "answer": "string"
+      "question": "<technical question>",
+      "intention": "<why interviewer asks this>",
+      "answer": "<ideal answer points>"
     }
   ],
   "behavioralQuestions": [
     {
-      "question": "string",
-      "intention": "string",
-      "answer": "string"
+      "question": "<behavioral question>",
+      "intention": "<why interviewer asks this>",
+      "answer": "<ideal answer points>"
     }
   ],
   "skillGaps": [
     {
-      "skill": "string",
-      "severity": "Low | Medium | High"
+      "skill": "<missing skill>",
+      "severity": "<Low | Medium | High>"
     }
   ],
   "preparationPlan": [
     {
-      "day": number,
-      "focus": "string",
-      "tasks": ["string"]
+      "day": <day number>,
+      "focus": "<topic for the day>",
+      "tasks": ["<task 1>", "<task 2>"]
     }
   ]
 }
 
-IMPORTANT:
-- Generate at least 5 technical questions
-- Generate at least 3 behavioral questions
-- Provide complete answers (not short phrases)
-- Use realistic interview-level content
+STRICT RULES:
+- Return ONLY the JSON object, nothing else
+- No backticks, no markdown, no extra text  
+- severity must be exactly "Low", "Medium", or "High"
+- Generate at least 5 technicalQuestions and 3 behavioralQuestions
+- tasks must be an array of strings
+- day must be a number not a string
 
-Now generate for:
-
-Resume:
-${resume}
-
-Self Description:
-${selfDescription}
-
-Job Description:
-${jobDescription}
+Resume: ${resume}
+Self Description: ${selfDescription}
+Job Description: ${jobDescription}
 `;
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents:prompt,
-        config:{
-            responseMimeType:"application/json",
-            responseSchema: zodToJsonSchema(interviewReportSchema) // isse hoga kya ki jab bhi hum AI se interview report generate karne ke liye bolenge, to AI ko pata hoga ki hume ek JSON format me response chahiye, jisme resume, selfDescription, aur jobDescription ke fields honge, aur unke andar string values hongi, aur AI uske according apna response format karega, taki hume us response ko easily parse karke apne application me use kar sake.
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json" // ✅ only this
         }
     });
-    
-    console.log(response.text); // isse hoga kya ki jab bhi hum AI se response receive karenge, to hum us response ko json.parse karke ek JavaScript object me convert kar denge, taki hum uske andar ke fields ko easily access kar sake, jaise ki resume, selfDescription, aur jobDescription, aur unke basis pe hum apne application me further processing kar sake, jaise ki interview report ko database me store karna ya user ko display karna.
 
-    return JSON.parse(response.text); // isse hoga kya ki jab bhi hum AI se response receive karenge, to hum us response ko json.parse karke ek JavaScript object me convert kar denge, taki hum uske andar ke fields ko easily access kar sake, jaise ki matchScore, technicalQuestions, behavioralQuestions, skillGaps, aur preparationPlan, aur unke basis pe hum apne application me further processing kar sake, jaise ki interview report ko database me store karna ya user ko display karna.
+    console.log("🤖 Raw AI Response:", response.text);
+
+    // Step 1 — Parse JSON
+    let parsed;
+    try {
+        const cleaned = response.text.replace(/```json|```/g, "").trim();
+        parsed = JSON.parse(cleaned);
+    } catch (err) {
+        console.error("❌ JSON Parse Error:", response.text);
+        throw new Error("Invalid JSON from AI");
+    }
+
+    // Step 2 — Zod Validation
+    const result = interviewReportSchema.safeParse(parsed);
+
+    if (!result.success) {
+        console.error("❌ Schema Mismatch:", JSON.stringify(result.error.format(), null, 2));
+        throw new Error("AI response schema mismatch");
+    }
+
+    return result.data;
 }
 
 

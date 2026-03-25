@@ -20,7 +20,6 @@ async function authUser(req,res,next){
 
     try{
     const decoded= jwt.verify(token,process.env.JWT_SECRET);
-
     req.user=decoded; // decoded me user ki details hongi jo token banate time dali thi, usko req.user me store kar denge taki aage ke controllers me use kar sake
 
     next();

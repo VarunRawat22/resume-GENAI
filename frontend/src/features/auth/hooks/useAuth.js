@@ -1,5 +1,5 @@
 import { useContext,useEffect } from "react";
-import { AuthContext } from "../context.auth.jsx";
+import { AuthContext } from "../auth.context.jsx";
 import { register, login, logout, getMe } from "../services/auth.api.js";
 // custom hook for authentication
 
