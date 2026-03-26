@@ -23,5 +23,29 @@ const upload = require("../middlewares/file.middleware"); // is middleware ko hu
 interviewRouter.post("/",authMiddleware.authUser,upload.single("resume"),interviewController.generateInterviewReportController); // is route ka endpoint h /api/interview/ aur method h POST, aur is route pe hum authMiddleware.authUser middleware ko apply karenge taki sirf authenticated users hi is route ko access kar sake, aur interviewController.generateInterviewController function ko is route ke handler ke roop me use karenge taki jab bhi koi request is route pe aayegi to wo function execute hoga, aur us function ke andar hum interview report generate karne ka logic implement karenge, taki jab bhi koi user apna resume, self description, aur job description bheje to uske basis pe AI se interview report generate karke user ko response me bhej sake.
 
 
-module.exports = interviewRouter;
+/**
+ * @route GET /api/interview/report/:interviewId
+ * @description get interview report by interviewId.
+ * @access private
+ */
+interviewRouter.get("/report/:interviewId", authMiddleware.authUser, interviewController.getInterviewReportByIdController)
 
+
+/**
+ * @route GET /api/interview/
+ * @description get all interview reports of logged in user.
+ * @access private
+ */
+interviewRouter.get("/", authMiddleware.authUser, interviewController.getAllInterviewReportsController)
+
+
+/**
+ * @route GET /api/interview/resume/pdf
+ * @description generate resume pdf on the basis of user self description, resume content and job description.
+ * @access private
+ */
+interviewRouter.post("/resume/pdf/:interviewReportId", authMiddleware.authUser, interviewController.generateResumePdfController)
+
+
+
+module.exports = interviewRouter

@@ -32,7 +32,8 @@ const interviewReportSchema = z.object({
         day: z.number().describe("The specific day of the preparation plan, indicating the sequence of tasks to be completed."),
         focus: z.string().describe("The main focus or theme for that particular day of preparation, such as data structures, system design, etc."),
         tasks: z.array(z.string()).describe("A list of specific tasks or activities that the candidate should undertake on that day to effectively prepare for the interview.")
-    })).describe("A detailed preparation plan outlining daily tasks and focus areas for the candidate to follow in order to prepare effectively for the interview.")
+    })).describe("A detailed preparation plan outlining daily tasks and focus areas for the candidate to follow in order to prepare effectively for the interview."),
+    title: z.string().describe("The title of the interview report, summarizing the overall assessment of the candidate's profile and suitability for the job role.")
     
     
 });
