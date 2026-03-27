@@ -97,6 +97,7 @@ async function generateInterViewReportController(req, res) {
         selfDescription,
         jobDescription
     })
+    
 
     const interviewReport = await interviewReportModel.create({
         user: req.user.id,
@@ -112,6 +113,39 @@ async function generateInterViewReportController(req, res) {
     })
 
 }
+// async function generateInterViewReportController(req, res) {
+//     try {
+//         if (!req.file) {
+//             return res.status(400).json({ message: "Resume file is required." })
+//         }
+
+//         const resumeContent = await pdfParse(req.file.buffer)  // ✅ fixed
+//         const { selfDescription, jobDescription } = req.body
+
+//         const interViewReportByAi = await generateInterviewReport({
+//             resume: resumeContent.text,
+//             selfDescription,
+//             jobDescription
+//         })
+
+//         const interviewReport = await interviewReportModel.create({
+//             user: req.user.id,
+//             resume: resumeContent.text,
+//             selfDescription,
+//             jobDescription,
+//             ...interViewReportByAi
+//         })
+
+//         res.status(201).json({
+//             message: "Interview report generated successfully.",
+//             interviewReport
+//         })
+
+//     } catch (error) {
+//         console.error("generateInterViewReportController error:", error)
+//         res.status(500).json({ message: error.message })
+//     }
+// }
 
 /**
  * @description Controller to get interview report by interviewId.

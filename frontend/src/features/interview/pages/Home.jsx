@@ -12,11 +12,29 @@ const Home = () => {
 
     const navigate = useNavigate()
 
+    // const handleGenerateReport = async () => {
+    //     const resumeFile = resumeInputRef.current.files[ 0 ]
+    //     const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+    //     navigate(`/interview/${data._id}`)
+    // }
+
     const handleGenerateReport = async () => {
-        const resumeFile = resumeInputRef.current.files[ 0 ]
-        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
-        navigate(`/interview/${data._id}`)
+    const resumeFile = resumeInputRef.current.files[0]
+
+    if (!resumeFile && !selfDescription) {
+        alert("Please upload a resume or enter a self description.")
+        return
     }
+
+    const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+
+    if (!data || !data._id) {
+        alert("Failed to generate report. Please try again.")
+        return
+    }
+
+    navigate(`/interview/${data._id}`)
+}
 
     if (loading) {
         return (

@@ -123,4 +123,4 @@ Job Description: ${jobDescription}
 }
 
 
-module.exports = generateInterviewReport;
+module.exports = {generateInterviewReport};

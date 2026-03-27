@@ -20,7 +20,7 @@ const upload = require("../middlewares/file.middleware"); // is middleware ko hu
  */
 
 
-interviewRouter.post("/",authMiddleware.authUser,upload.single("resume"),interviewController.generateInterviewReportController); // is route ka endpoint h /api/interview/ aur method h POST, aur is route pe hum authMiddleware.authUser middleware ko apply karenge taki sirf authenticated users hi is route ko access kar sake, aur interviewController.generateInterviewController function ko is route ke handler ke roop me use karenge taki jab bhi koi request is route pe aayegi to wo function execute hoga, aur us function ke andar hum interview report generate karne ka logic implement karenge, taki jab bhi koi user apna resume, self description, aur job description bheje to uske basis pe AI se interview report generate karke user ko response me bhej sake.
+interviewRouter.post("/",authMiddleware.authUser,upload.single("resume"),interviewController.generateInterViewReportController); // is route ka endpoint h /api/interview/ aur method h POST, aur is route pe hum authMiddleware.authUser middleware ko apply karenge taki sirf authenticated users hi is route ko access kar sake, aur interviewController.generateInterviewController function ko is route ke handler ke roop me use karenge taki jab bhi koi request is route pe aayegi to wo function execute hoga, aur us function ke andar hum interview report generate karne ka logic implement karenge, taki jab bhi koi user apna resume, self description, aur job description bheje to uske basis pe AI se interview report generate karke user ko response me bhej sake.
 
 
 /**
