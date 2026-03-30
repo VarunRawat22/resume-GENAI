@@ -142,11 +142,38 @@ async function generatePdfFromHtml(htmlContent) {
 }
 
 
-async function generateResumePdf({ resume, selfDescription, jobDescription }) {
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+async function withRetry(fn, retries = 3, baseDelay = 1000) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const is503 =
+        error?.message?.includes("503") ||
+        error?.message?.includes("UNAVAILABLE") ||
+        error?.status === "UNAVAILABLE";
+
+      if (is503 && attempt < retries) {
+        const waitTime = baseDelay * 2 ** (attempt - 1); // 1s → 2s → 4s
+        console.warn(
+          `[Gemini] 503 received – retrying in ${waitTime}ms (attempt ${attempt}/${retries})`
+        );
+        await delay(waitTime);
+      } else {
+        throw error; // rethrow on final attempt or non-503 errors
+      }
+    }
+  }
+}
+
+// ─── Main Function ───────────────────────────────────────────────────────────
+
+async function generateResumePdf({ resume, selfDescription, jobDescription }) {
   const resumePdfSchema = z.object({
-    html: z.string().describe("The HTML content of the resume PDF")
+    html: z.string().describe("The HTML content of the resume PDF"),
   });
+
   const prompt = `Generate resume for a candidate with the following details:
                         Resume: ${resume}
                         Self Description: ${selfDescription}
@@ -158,26 +185,29 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
                         you can highlight the content using some colors or different font styles but the overall design should be simple and professional.
                         The content should be ATS friendly, i.e. it should be easily parsable by ATS systems without losing important information.
                         The resume should not be so lengthy, it should ideally be 1-2 pages long when converted to PDF. Focus on quality rather than quantity and make sure to include all the relevant information that can increase the candidate's chances of getting an interview call for the given job description.
-                    `
+                    `;
 
-      const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: prompt,
-    config: {
-        responseMimeType: "application/json",
-        responseSchema: zodToJsonSchema(resumePdfSchema)
+  // Wrap the Gemini API call in retry logic
+  const response = await withRetry(
+    () =>
+      ai.models.generateContent({
+        model: "gemini-2.0-flash",   // ← switched from preview model (less stable)
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: zodToJsonSchema(resumePdfSchema),
+        },
+      }),
+    3,    // max retries
+    1000  // base delay in ms
+  );
 
-    }
-    });
+  const jsonContent = JSON.parse(response.text);
+  const pdfBuffer = await generatePdfFromHtml(jsonContent.html);
 
-    const jsonContent = JSON.parse(response.text);
-
-    const pdfBuffer = await generatePdfFromHtml(jsonContent.html);
-
-    return pdfBuffer;
+  return pdfBuffer;
 }
 
-
-
+// ─── Exports ─────────────────────────────────────────────────────────────────
 
 module.exports = { generateInterviewReport, generateResumePdf };
