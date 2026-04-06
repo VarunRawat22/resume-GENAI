@@ -18,7 +18,7 @@ authRouter.post("/register", authController.registerUserController);
  * @description Login an existing user with email and password
  * @access Public
  */
-authRouter.post("/login", authController.loginUserController);
+authRouter.get("/login", authController.loginUserController);
 
 /**
  * @route GET /api/auth/logout
