@@ -3,6 +3,8 @@ const app=express();
 const cors=require('cors');
 const cookieParser=require('cookie-parser'); // iske bina hum cookies ko read nahi kar payenge
 
+app.set("trust proxy", 1); // IMPORTANT for Render
+
 app.use(cookieParser()); // cookie parser middleware ko use krna hoga taki hum cookies ko read kr paye
 
 app.use(express.json());
