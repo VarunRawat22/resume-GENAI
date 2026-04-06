@@ -8,7 +8,7 @@ app.use(cookieParser()); // cookie parser middleware ko use krna hoga taki hum c
 app.use(express.json());
 
 app.use(cors({
-    origin: 'http://localhost:5173', // frontend ka url
+    origin: 'resume-genai-jsioglwdo-varunrawat22s-projects.vercel.app', // frontend ka url
     credentials: true // credentials true krna hoga taki frontend se cookies ko send kr paye
 })); // CORS middleware ko use krna hoga taki frontend se backend ko access kr paye
 
